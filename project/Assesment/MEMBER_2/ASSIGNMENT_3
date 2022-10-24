@@ -1,0 +1,517 @@
+{
+  "cells": [
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "id": "NGFc7Hbn8g2z"
+      },
+      "outputs": [],
+      "source": []
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 52,
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "dlv6eWLQ8kPt",
+        "outputId": "8ce7f51e-c2a9-4779-8ee5-c2fde92e85d0"
+      },
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Drive already mounted at /content/drive; to attempt to forcibly remount, call drive.mount(\"/content/drive\", force_remount=True).\n"
+          ]
+        }
+      ],
+      "source": [
+        "\n",
+        "from google.colab import drive\n",
+        "drive.mount('/content/drive')\n",
+        "\n"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "YpyaGcdL8rd8",
+        "outputId": "faf7e2be-d3ad-419f-b858-2080d0bbe148"
+      },
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "[Errno 2] No such file or directory: '/content/drive/MyDrive/AI_IBM'\n",
+            "/content\n"
+          ]
+        }
+      ],
+      "source": [
+        "cd/content/drive/MyDrive/AI_IBM\n"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "3XXdJLHV8806",
+        "outputId": "eb58f55a-e813-45cc-a62e-e632a5e2aeb1"
+      },
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "unzip:  cannot find or open Flowers-Dataset.zip, Flowers-Dataset.zip.zip or Flowers-Dataset.zip.ZIP.\n"
+          ]
+        }
+      ],
+      "source": [
+        "!unzip Flowers-Dataset.zip\n"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "id": "Dxl7oeHh9Egy"
+      },
+      "outputs": [],
+      "source": [
+        "from tensorflow.keras.preprocessing.image import ImageDataGenerator\n"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "id": "tOFb1i3f9LAS"
+      },
+      "outputs": [],
+      "source": [
+        "train_datagen=ImageDataGenerator(rescale=1./255, zoom_range=0.2,horizontal_flip=True,vertical_flip=False)"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "id": "h6IVN5zD9Npa"
+      },
+      "outputs": [],
+      "source": [
+        "test_datagen=ImageDataGenerator(rescale=1./255)"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "d14TpDbx9QmS",
+        "outputId": "0090d773-d16a-4f88-9b96-f2a700822a69"
+      },
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Found 4319 images belonging to 5 classes.\n",
+            "Found 4319 images belonging to 5 classes.\n"
+          ]
+        }
+      ],
+      "source": [
+        "x_train=train_datagen.flow_from_directory(r\"/content/drive/MyDrive/Flowers-Dataset/flowers\",target_size=(64,64),class_mode='categorical',batch_size=24)\n",
+        "x_test=test_datagen.flow_from_directory(r\"/content/drive/MyDrive/Flowers-Dataset/flowers\",target_size=(64,64),class_mode='categorical',batch_size=24)"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "pkHi5QM29oEx",
+        "outputId": "26858dba-d6e2-4f72-f55b-836ae5832576"
+      },
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "{'daisy': 0, 'dandelion': 1, 'rose': 2, 'sunflower': 3, 'tulip': 4}"
+            ]
+          },
+          "metadata": {},
+          "execution_count": 21
+        }
+      ],
+      "source": [
+        "x_train.class_indices"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "id": "ylXAJurL9sw6"
+      },
+      "outputs": [],
+      "source": [
+        "from tensorflow.keras.models import Sequential\n",
+        "from tensorflow.keras.layers import Dense,Convolution2D,MaxPooling2D,Flatten"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "id": "_Q4z2G559v9Y"
+      },
+      "outputs": [],
+      "source": [
+        "model=Sequential()"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "id": "T8MfXn0v9yzp"
+      },
+      "outputs": [],
+      "source": [
+        "model.add(Convolution2D(32,(3,3),input_shape=(64,64,3),activation='relu'))"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "id": "02_ot-q393Xo"
+      },
+      "outputs": [],
+      "source": [
+        "model.add(MaxPooling2D(pool_size=(2,2)))"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "id": "fRCvXdJt94yo"
+      },
+      "outputs": [],
+      "source": [
+        "model.add(Flatten())"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "FtrLBRLR-AHn",
+        "outputId": "0e4c35d5-1e04-410a-9c4b-7602b461efa2"
+      },
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Model: \"sequential\"\n",
+            "_________________________________________________________________\n",
+            " Layer (type)                Output Shape              Param #   \n",
+            "=================================================================\n",
+            " conv2d (Conv2D)             (None, 62, 62, 32)        896       \n",
+            "                                                                 \n",
+            " max_pooling2d (MaxPooling2D  (None, 31, 31, 32)       0         \n",
+            " )                                                               \n",
+            "                                                                 \n",
+            " flatten (Flatten)           (None, 30752)             0         \n",
+            "                                                                 \n",
+            "=================================================================\n",
+            "Total params: 896\n",
+            "Trainable params: 896\n",
+            "Non-trainable params: 0\n",
+            "_________________________________________________________________\n"
+          ]
+        }
+      ],
+      "source": [
+        "model.summary()"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "id": "YHcCQn2n-DNv"
+      },
+      "outputs": [],
+      "source": [
+        "model.add(Dense(300,activation='relu'))\n",
+        "model.add(Dense(150,activation='relu'))"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "id": "oRGMGnWt-GX_"
+      },
+      "outputs": [],
+      "source": [
+        "model.add(Dense(5,activation='softmax'))"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "id": "Ds_qcwD2-I33"
+      },
+      "outputs": [],
+      "source": [
+        "model.compile(loss='categorical_crossentropy',optimizer='adam',metrics=['accuracy'])"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "Qs5zuEkX-MUn",
+        "outputId": "8d4b6fcc-31cf-473a-f7c3-3f5071fde0b5"
+      },
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "180"
+            ]
+          },
+          "metadata": {},
+          "execution_count": 31
+        }
+      ],
+      "source": [
+        "\n",
+        "len(x_train)"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "id": "nY9IkwVktrj_"
+      },
+      "outputs": [],
+      "source": []
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "v4UcdOyz-PPv",
+        "outputId": "1b22a7fe-7ead-4eda-8c36-1f652cef51c5"
+      },
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Epoch 1/10\n"
+          ]
+        },
+        {
+          "output_type": "stream",
+          "name": "stderr",
+          "text": [
+            "/usr/local/lib/python3.7/dist-packages/ipykernel_launcher.py:1: UserWarning: `Model.fit_generator` is deprecated and will be removed in a future version. Please use `Model.fit`, which supports generators.\n",
+            "  \"\"\"Entry point for launching an IPython kernel.\n"
+          ]
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "180/180 [==============================] - 641s 4s/step - loss: 1.1619 - accuracy: 0.5210 - val_loss: 1.0412 - val_accuracy: 0.5823\n",
+            "Epoch 2/10\n",
+            "180/180 [==============================] - 45s 248ms/step - loss: 1.0081 - accuracy: 0.6038 - val_loss: 1.0351 - val_accuracy: 0.5920\n",
+            "Epoch 3/10\n",
+            "180/180 [==============================] - 46s 253ms/step - loss: 0.9305 - accuracy: 0.6335 - val_loss: 0.9704 - val_accuracy: 0.6416\n",
+            "Epoch 4/10\n",
+            "180/180 [==============================] - 44s 246ms/step - loss: 0.8867 - accuracy: 0.6541 - val_loss: 0.7991 - val_accuracy: 0.7011\n",
+            "Epoch 5/10\n",
+            "180/180 [==============================] - 45s 249ms/step - loss: 0.8170 - accuracy: 0.6842 - val_loss: 0.8537 - val_accuracy: 0.6833\n",
+            "Epoch 6/10\n",
+            "180/180 [==============================] - 44s 247ms/step - loss: 0.7844 - accuracy: 0.7032 - val_loss: 0.7659 - val_accuracy: 0.7171\n",
+            "Epoch 7/10\n",
+            "180/180 [==============================] - 44s 246ms/step - loss: 0.7579 - accuracy: 0.7064 - val_loss: 0.6352 - val_accuracy: 0.7587\n",
+            "Epoch 8/10\n",
+            "180/180 [==============================] - 45s 252ms/step - loss: 0.6905 - accuracy: 0.7284 - val_loss: 0.6400 - val_accuracy: 0.7560\n",
+            "Epoch 9/10\n",
+            "180/180 [==============================] - 45s 248ms/step - loss: 0.6370 - accuracy: 0.7553 - val_loss: 0.5248 - val_accuracy: 0.7962\n",
+            "Epoch 10/10\n",
+            "180/180 [==============================] - 46s 254ms/step - loss: 0.6242 - accuracy: 0.7574 - val_loss: 0.6131 - val_accuracy: 0.7756\n"
+          ]
+        },
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "<keras.callbacks.History at 0x7f96c495b3d0>"
+            ]
+          },
+          "metadata": {},
+          "execution_count": 33
+        }
+      ],
+      "source": [
+        "model.fit_generator(x_train,steps_per_epoch=len(x_train), validation_data=x_test, validation_steps=len(x_test), epochs= 10)"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "id": "PYmSiCU3B44M"
+      },
+      "outputs": [],
+      "source": [
+        "model.save('Flowers_classification_model1.h5')"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "amp9gytRB6K8",
+        "outputId": "7f20852d-364e-40e7-de32-efffcef6b4bc"
+      },
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "\u001b[0m\u001b[01;34mdrive\u001b[0m/  Flowers_classification_model1.h5  \u001b[01;34msample_data\u001b[0m/\n"
+          ]
+        }
+      ],
+      "source": [
+        "ls"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "id": "CiceKiMVB9UE"
+      },
+      "outputs": [],
+      "source": [
+        "import numpy as np\n",
+        "from tensorflow.keras.models import load_model\n",
+        "from tensorflow.keras.preprocessing import image"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "id": "fmA5zSrHCAAc"
+      },
+      "outputs": [],
+      "source": [
+        "model=load_model('Flowers_classification_model1.h5')"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "\n",
+        "img=image.load_img(r\"/content/33411423082_8150d9254e_n.jpg\",target_size=(64,64))\n",
+        "x=image.img_to_array(img)\n",
+        "x=np.expand_dims(x,axis=0)\n",
+        "y=np.argmax(model.predict(x),axis=1)\n",
+        "# x_train.class_indices\n",
+        "index=['daisy','dandelion','rose','sunflower','tulip']\n",
+        "index[y[0]]"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 52
+        },
+        "id": "hDUpVIJnfWg5",
+        "outputId": "428000e2-f7bd-4368-c21a-76fbaa628d4c"
+      },
+      "execution_count": 57,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "1/1 [==============================] - 0s 148ms/step\n"
+          ]
+        },
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "'rose'"
+            ],
+            "application/vnd.google.colaboratory.intrinsic+json": {
+              "type": "string"
+            }
+          },
+          "metadata": {},
+          "execution_count": 57
+        }
+      ]
+    }
+  ],
+  "metadata": {
+    "colab": {
+      "collapsed_sections": [],
+      "provenance": []
+    },
+    "kernelspec": {
+      "display_name": "Python 3",
+      "name": "python3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "nbformat": 4,
+  "nbformat_minor": 0
+}
